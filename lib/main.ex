@@ -3,7 +3,12 @@ defmodule CLI do
     # TODO: Uncomment the code below to pass the first stage
     IO.write("$ ")
     command = IO.gets("") |> String.trim()
-    IO.puts("#{command}: command not found")
-    main(args)
+
+    case command do
+      "exit" -> exit(:normal)
+      _ -> IO.puts("#{command}: command not found")
+      main(args)
+    end
+
   end
 end
