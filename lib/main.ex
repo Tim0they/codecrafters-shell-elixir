@@ -6,6 +6,7 @@ defmodule CLI do
 
     case command do
       "exit" -> exit(:normal)
+      "echo"<> value -> IO.puts(value)
       _ -> IO.puts("#{command}: command not found")
       main(args)
     end
