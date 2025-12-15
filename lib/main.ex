@@ -24,7 +24,7 @@ defmodule CLI do
       IO.puts("#{cmd} is a shell builtin")
     else
       case find_file(cmd) do
-        [""] -> IO.puts("#{cmd}: not found")
+        [] -> IO.puts("#{cmd}: not found")
         file -> IO.puts("#{cmd} is #{file}")
       end
 
