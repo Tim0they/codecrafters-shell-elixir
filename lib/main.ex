@@ -8,8 +8,8 @@ defmodule CLI do
       "exit" -> exit(:normal)
       "echo "<> value -> IO.puts(value)
       _ -> IO.puts("#{command}: command not found")
-      main(args)
     end
+    main(args)
 
   end
 end
