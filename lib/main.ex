@@ -1,5 +1,5 @@
 defmodule CLI do
-
+  import Bitwise
   @commands ["exit", "echo", "type"]
 
   def main(args) do
@@ -45,10 +45,17 @@ defmodule CLI do
     end
   end
 
+  defp is_executable(filepath) do
+    case File.stat(filepath) do
+      {:ok, stat} -> (stat.mode &&& 0o111) != 0
+      {:error, _} -> false
+    end
+  end
+
   defp find_file(filename) do
     path_env = System.get_env("PATH")
     path_dirs = String.split(path_env || "", ":")
-    file_found =
+    files_found =
       Enum.flat_map(path_dirs, fn dir ->
         case File.ls(dir) do
           {:ok, files} -> [get_file(files, filename, dir)]
@@ -56,6 +63,8 @@ defmodule CLI do
         end
       end)
       |> Enum.uniq()
-      file_found
+      |> Enum.filter(&is_executable/1)
+      |> Enum.take(1)
+      files_found
   end
 end
