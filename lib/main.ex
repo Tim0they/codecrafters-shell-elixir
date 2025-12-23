@@ -1,24 +1,29 @@
 defmodule CLI do
   import Bitwise
-  @commands ["exit", "echo", "type", "pwd"]
+  @commands ["exit", "echo", "type", "pwd", "cd"]
 
-  def main(args) do
-    IO.write("$ ")
-    command = IO.gets("") |> String.trim()
-    evaluate(command)
-    main(args)
-
+  def main(_args) do
+    pwd = File.cwd!()
+    loop(pwd)
   end
 
-  def evaluate("exit") do
+  defp loop(pwd) do
+    IO.write("$ ")
+    command = IO.gets("") |> String.trim()
+    new_pwd = evaluate(command, pwd)
+    loop(new_pwd)
+  end
+
+  def evaluate("exit", _pwd) do
     exit(:normal)
   end
 
-  def evaluate("echo "<> cmd) do
+  def evaluate("echo "<> cmd, pwd) do
     IO.puts(cmd)
+    pwd
   end
 
-  def evaluate("type "<> cmd) do
+  def evaluate("type "<> cmd, pwd) do
     if Enum.member?(@commands, cmd) do
       IO.puts("#{cmd} is a shell builtin")
     else
@@ -28,13 +33,34 @@ defmodule CLI do
       end
 
     end
+    pwd
   end
 
-  def evaluate("pwd") do
-    IO.puts(File.cwd!())
+  def evaluate("pwd", pwd) do
+    IO.puts(pwd)
+    pwd
   end
 
-  def evaluate(cmd) do
+  def evaluate("cd ..", pwd) do
+    Path.dirname(pwd)
+  end
+
+  def evaluate("cd "<> path, pwd) do
+    new_path = if String.starts_with?(path, "/") do
+      path
+    else
+      Path.join(pwd, path)
+    end
+
+    case File.dir?(new_path) do
+      true -> new_path
+      false ->
+        IO.puts("cd: #{path}: No such file or directory")
+        pwd
+    end
+  end
+
+  def evaluate(cmd, pwd) do
     [command | args] = String.split(cmd, " ")
 
     executable = find_file(command)
@@ -43,6 +69,7 @@ defmodule CLI do
     else
       IO.puts("#{cmd}: command not found")
     end
+    pwd
   end
 
 
