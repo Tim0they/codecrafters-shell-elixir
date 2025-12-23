@@ -30,6 +30,10 @@ defmodule CLI do
     end
   end
 
+  def evaluate("pwd") do
+    IO.puts(File.cwd!())
+  end
+
   def evaluate(cmd) do
     [command | args] = String.split(cmd, " ")
 
