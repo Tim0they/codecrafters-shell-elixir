@@ -34,9 +34,8 @@ defmodule CLI do
     [command | args] = String.split(cmd, " ")
 
     executable = find_file(command)
-    if executable do
-      [value | _tail] = executable
-      run_external_command(value, args)
+    if length(executable) > 0 do
+      run_external_command(command, args)
     else
       IO.puts("#{cmd}: command not found")
     end
