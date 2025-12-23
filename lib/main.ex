@@ -3,7 +3,6 @@ defmodule CLI do
   @commands ["exit", "echo", "type"]
 
   def main(args) do
-    # TODO: Uncomment the code below to pass the first stage
     IO.write("$ ")
     command = IO.gets("") |> String.trim()
     evaluate(command)
@@ -32,7 +31,15 @@ defmodule CLI do
   end
 
   def evaluate(cmd) do
-    IO.puts("#{cmd}: command not found")
+    [command | args] = String.split(cmd, " ")
+
+    executable = find_file(command)
+    if executable do
+      [value | _tail] = executable
+      run_external_command(value, args)
+    else
+      IO.puts("#{cmd}: command not found")
+    end
   end
 
 
@@ -66,5 +73,10 @@ defmodule CLI do
       |> Enum.filter(&is_executable/1)
       |> Enum.take(1)
       files_found
+  end
+
+  def run_external_command(filepath, args\\[]) do
+    {output, _exit_status} = System.cmd(filepath,args)
+    IO.puts(output)
   end
 end
