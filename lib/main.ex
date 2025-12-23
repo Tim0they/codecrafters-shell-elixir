@@ -1,6 +1,6 @@
 defmodule CLI do
   import Bitwise
-  @commands ["exit", "echo", "type"]
+  @commands ["exit", "echo", "type", "pwd"]
 
   def main(args) do
     IO.write("$ ")
