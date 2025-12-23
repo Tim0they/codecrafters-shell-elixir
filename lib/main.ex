@@ -75,7 +75,6 @@ defmodule CLI do
   end
 
   def run_external_command(filepath, args\\[]) do
-    {output, _exit_status} = System.cmd(filepath,args)
-    IO.puts(output)
+    {_output, _exit_status} = System.cmd(filepath,args,into: IO.stream(),arg0: filepath)
   end
 end
